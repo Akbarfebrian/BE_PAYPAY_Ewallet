@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid()) // Diubah dari Int ke String UUID
+  name          String
+  email         String    @unique
+  password      String
+  phoneNumber   String    @unique
+  token         String    @unique
+  balance       Float     @default(0)
+  isVerified    Boolean   @default(false)
+  role          String    @default("USER")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  transactions         Transaction[] @relation("UserTransactions")
+  receivedTransactions Transaction[] @relation("RecipientTransactions")
+
+  @@map("User")
+}
+
+model Transaction {
+  id                     String    @id @default(uuid()) // Direkomendasikan untuk konsistensi, atau tetap Int jika diinginkan
+  userId                 String    // Diubah dari Int ke String untuk mencocokkan User.id
+  recipientId            String?   // Diubah dari Int? ke String? untuk mencocokkan User.id
+  type                   String    // TOPUP, TRANSFER, WITHDRAW, FEE
+  amount                 Float
+  status                 String    // PENDING, COMPLETED, FAILED
+  referenceId            String?   @unique
+  xenditPaymentRequestId String?
+  description            String?
+  adminWithdrawn         Boolean   @default(false)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  // Relations
+  user      User   @relation("UserTransactions", fields: [userId], references: [id])
+  recipient User?  @relation("RecipientTransactions", fields: [recipientId], references: [id])
+
+  @@map("Transaction")
+}
