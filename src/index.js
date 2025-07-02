@@ -33,6 +33,3 @@ const startServer = async () => {
 
 startServer();
 
-app.get("/", (req, res) => {
-  res.send("Backend QRIS Ewallet sudah berjalan ✅");
-});

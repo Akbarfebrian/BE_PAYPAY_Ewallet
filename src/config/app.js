@@ -29,4 +29,8 @@ app.use((err, req, res, next) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.send("Backend QRIS Ewallet sudah berjalan ✅");
+});
+
 module.exports = app;
